@@ -1,7 +1,7 @@
 <div align="center">
 
 # **Stellaksh DevOps Analyzer**
-### Client-Side DevOps Toolkit — Secure • Fast • No Uploads*
+### Client-Side DevOps Toolkit — Secure • Fast • No Uploads
 
 <img src="assets/banner.png.PNG" width="100%" alt="Stellaksh Banner"/>
 
