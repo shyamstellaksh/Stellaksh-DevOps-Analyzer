@@ -1,9 +1,13 @@
-function analyze() {
-    const input = document.getElementById("input").value;
+function validateYAML() {
+    const input = document.getElementById("yamlInput").value;
+    const output = document.getElementById("output");
+
     try {
         jsyaml.load(input);
-        document.getElementById("output").textContent = "✔ YAML is valid!";
-    } catch (err) {
-        document.getElementById("output").textContent = "❌ Error: " + err.message;
+        output.textContent = "✅ YAML is valid!";
+        output.style.color = "#0f0";
+    } catch (error) {
+        output.textContent = "❌ YAML Error:\n\n" + error.message;
+        output.style.color = "#ff4d4d";
     }
 }
