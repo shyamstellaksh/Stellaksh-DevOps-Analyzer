@@ -1,36 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>YAML Analyzer — Stellaksh DevOps Analyzer</title>
-
-  <!-- Google font (Inter or Poppins) - optional -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <!-- main stylesheet -->
-  <link rel="stylesheet" href="assets/css/style.css">
-
-  <!-- small favicons / theme color -->
-  <meta name="theme-color" content="#0b3d91">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAML Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/premium.css">
 </head>
+
 <body>
-  <header class="site-header">
-    <div class="wrap">
-      <h1 class="brand">YAML Analyzer</h1>
-      <p class="tag">Client-side DevOps validation — no backend, no upload</p>
-    </div>
-  </header>
+    <header class="header">
+        <h1>YAML Analyzer</h1>
+        <p>Validate & debug YAML directly in your browser — nothing uploaded.</p>
+    </header>
 
-  <main class="wrap">
-    <!-- your existing page markup goes here -->
-    <!-- e.g. upload area, textarea, results, etc. -->
-  </main>
+    <section class="container">
+        <textarea id="yamlInput" placeholder="Paste your YAML here..."></textarea>
+        <button onclick="validateYAML()">Analyze YAML</button>
+        <pre id="output"></pre>
+    </section>
 
-  <footer class="site-footer wrap">
-    <small>© 2025 Shyam Stellaksh — Client-side DevOps tools</small>
-  </footer>
+    <footer class="footer">
+        Powered by Stellaksh DevOps Analyzer — secure, client-side tools
+    </footer>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
