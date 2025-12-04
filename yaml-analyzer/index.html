@@ -1,30 +1,71 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>YAML Analyzer</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>YAML Analyzer — Stellaksh</title>
+  <meta name="description" content="Validate & debug Kubernetes / CI-CD YAML in your browser. No uploads. Quick suggestions & safe auto-fix." />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <h1>YAML Analyzer</h1>
-    <p>Validate & debug YAML directly in your browser — nothing uploaded.</p>
+  <main class="wrap">
+    <header class="hero">
+      <h1>YAML Analyzer</h1>
+      <p class="subtitle">Validate & debug YAML directly in your browser — nothing uploaded. Quick error explanations and safe auto-fix suggestions.</p>
+    </header>
 
-    <div class="container">
-        <textarea id="inputYAML" placeholder="Paste your YAML here..."></textarea>
+    <section class="analyzer card">
+      <label for="yamlInput" class="label">Paste your YAML here</label>
+      <textarea id="yamlInput" class="editor" placeholder="Paste Kubernetes / CI-CD / manifest snippet..."></textarea>
 
-        <button onclick="analyzeYAML()">Analyze YAML</button>
-        <button onclick="clearFields()">Clear</button>
-        <button onclick="autoFixYAML()">Try Auto-Fix (safe)</button>
+      <div class="controls">
+        <button id="analyzeBtn" class="btn primary">Analyze YAML</button>
+        <button id="clearBtn" class="btn">Clear</button>
+        <button id="autofixBtn" class="btn">Try Auto-Fix (safe)</button>
+      </div>
 
-        <div id="output"></div>
-        <div id="suggestions"></div>
-    </div>
+      <div id="result" class="result card muted"></div>
+    </section>
 
-    <script src="script.js"></script>
+    <section class="suggestions card">
+      <h2>Suggestions & Fixes</h2>
+      <div id="suggestions" class="muted">Ready — paste YAML and click Analyze.</div>
+    </section>
+
+    <section class="quick card">
+      <h3>Quick test YAML</h3>
+      <p class="muted">Use these to test:</p>
+      <pre class="sample"><code id="sampleGood">apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+    - name: myapp
+      image: nginx:latest</code></pre>
+
+      <pre class="sample"><code id="sampleBad">apiVersion: v1
+kind Pod
+metadata:
+ name: badpod
+  labels:
+    app: test
+spec:
+  containers:
+    - name: myapp
+      image: nginx:latest</code></pre>
+
+      <p class="muted">The first is valid. The second intentionally has errors (use it to see suggestions).</p>
+    </section>
+
+    <footer class="footer muted">Everything runs locally in your browser. No data is sent anywhere.</footer>
+  </main>
+
+  <!-- js-yaml (client-side YAML parser) -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>
