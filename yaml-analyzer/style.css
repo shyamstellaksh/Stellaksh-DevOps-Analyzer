@@ -1,40 +1,68 @@
-/* style.css — simple dark theme, readable on mobile */
 :root{
   --bg:#0f1113;
-  --card:#0c0d0f;
-  --muted:#a7b0b8;
-  --accent:#2d6a4f;
-  --accent-2:#1b4b34;
-  --text:#e6eef2;
-  --danger:#ff5964;
-  --glass: rgba(255,255,255,0.02);
+  --card:#0f1720;
+  --muted:#9aa6b2;
+  --accent:#18a558;
+  --accent-600:#128c45;
+  --glass: rgba(255,255,255,0.03);
+  --radius:12px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
 }
 
 *{box-sizing:border-box}
-body{background:var(--bg); color:var(--text); font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; padding:24px; -webkit-font-smoothing:antialiased}
-.container{max-width:800px;margin:0 auto}
-.title{font-size:34px; margin:6px 0 8px}
-.lead{color:var(--muted);line-height:1.5;margin-bottom:18px}
-.card{background:var(--card); padding:18px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.6)}
-.card-title{margin:0 0 8px}
-.roadmap{color:var(--text); margin:0 0 12px 18px}
-.btn{display:inline-block; padding:10px 14px; background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.06); border-radius:8px; text-decoration:none; margin-top:8px}
-.btn:hover{opacity:0.95}
-.btn-green{background:var(--accent); border-color:var(--accent-2); color:#fff}
-.footer{color:var(--muted); margin-top:26px; font-size:13px}
+body{
+  margin:0;
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:linear-gradient(180deg,#050507 0%, var(--bg) 100%);
+  color:#E6EEF3;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.45;
+}
 
-/* Tool page specific */
-.tool-page .top{max-width:880px;margin:0 auto 18px;padding:0 8px}
-.top .home-link{color:var(--muted); text-decoration:none; display:inline-block; margin-bottom:8px}
-.top h1{margin:0;font-size:28px}
-.subtitle{color:var(--muted);margin:6px 0 12px}
-.tool{max-width:880px;margin:0 auto; display:block}
-.editor{background:var(--card); padding:16px; border-radius:12px; margin-bottom:18px}
-.label{display:block;color:var(--muted); margin-bottom:8px}
-textarea#yaml-input{width:100%; min-height:220px; background:#0b0c0e; color:var(--text); border-radius:8px; border:1px solid rgba(255,255,255,0.03); padding:12px; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:14px; line-height:1.45; resize:vertical}
-.controls{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap}
-.result-box{background:#081018; border-radius:8px; padding:12px; min-height:80px; color:#ff8b6b; white-space:pre-wrap}
-.suggestions{background:var(--glass); border-radius:8px; padding:12px; color:var(--muted); min-height:40px}
-.quick-tests{margin-top:12px; display:flex; gap:8px; flex-wrap:wrap}
-.small{padding:6px 8px; font-size:13px}
-.footer.small{margin-top:30px; color:var(--muted); font-size:13px; text-align:center}
+.container{max-width:1000px;margin:0 auto;padding:28px;}
+
+.site-header{padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:800;color:#F7FBFC;text-decoration:none;font-size:20px}
+.nav-link{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px}
+.site-header.small .brand{font-size:16px}
+
+.yaml-page{display:grid;grid-template-columns:1fr 320px;gap:24px;padding-bottom:60px}
+.tool-card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+.tool-card h1{margin:0 0 8px;font-size:24px}
+.tool-card .muted{color:var(--muted);margin-bottom:12px}
+
+#editor{
+  width:100%;
+  min-height:260px;
+  background:rgba(6,10,14,0.6);
+  color:#E6EEF3;
+  border:1px solid rgba(255,255,255,0.03);
+  padding:16px;
+  border-radius:10px;
+  font-family:var(--mono);
+  font-size:14px;
+  resize:vertical;
+  outline:none;
+}
+
+.controls{display:flex;gap:12px;margin-top:12px}
+.btn{border:0;padding:10px 14px;border-radius:10px;background:transparent;color:#E6EEF3;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03)}
+.btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-600));box-shadow:0 6px 20px rgba(8,120,66,0.25);font-weight:600}
+.btn:hover{transform:translateY(-1px)}
+
+.result{margin-top:18px}
+.result-box{min-height:80px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px;color:#f8eaea;font-family:var(--mono);white-space:pre-wrap;border:1px solid rgba(255,255,255,0.02)}
+
+.suggestions{margin-top:12px;background:var(--glass);padding:12px;border-radius:10px;color:var(--muted)}
+
+.quick-test{background:transparent;padding:8px}
+.example{background:transparent;color:#bcd; border:1px dashed rgba(255,255,255,0.02);padding:12px;border-radius:8px; font-family:var(--mono);white-space:pre-wrap}
+
+@media (max-width:900px){
+  .yaml-page{grid-template-columns:1fr}
+  .quick-test{order:2}
+  .container{padding:18px}
+  .site-header.small .brand{font-size:15px}
+}
