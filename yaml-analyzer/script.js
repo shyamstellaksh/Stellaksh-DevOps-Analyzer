@@ -85,22 +85,83 @@
     }
   }
 
-  // Auto-fix (safe): normalize tabs -> 2 spaces, remove trailing whitespace, normalize line endings
+  // Auto-fix (improved, still conservative)
   function tryAutoFix(){
-    if (!editor || !resultBox) { console.warn('Autofix: required elements missing'); return; }
-    let text = editor.value;
-    if(!text) return;
-    // replace tabs with 2 spaces (safe)
-    text = text.replace(/\t/g, '  ');
-    // trim trailing spaces
-    text = text.split(/\r?\n/).map(l => l.replace(/\s+$/,'')).join('\n');
-    // replace CRLF with LF
-    text = text.replace(/\r\n/g, '\n');
-    // remove extraneous leading BOM
-    text = text.replace(/^\uFEFF/,'');
+    let text = editor.value || '';
+    if(!text){ showResult('Nothing to fix — paste YAML first.', true); return; }
+
+    // 1) Normalize whitespace
+    text = text.replace(/\uFEFF/g,'');            // BOM
+    text = text.replace(/\u00A0/g,' ');           // NBSP -> space
+    text = text.replace(/\r\n/g,'\n');            // CRLF -> LF
+    text = text.replace(/\t/g, '  ');             // tabs -> 2 spaces
+    text = text.split('\n').map(l => l.replace(/[ \t]+$/,'')).join('\n'); // trim trailing spaces
+
+    // 2) Conservative "missing colon" heuristic:
+    //    convert lines like "apiVersion v1"  -> "apiVersion: v1"
+    //    but skip list items (- name foo), and skip long sentences
+    const lines = text.split('\n');
+    for(let i=0;i<lines.length;i++){
+      const raw = lines[i];
+      const beforeComment = raw.split('#')[0];
+      if(!beforeComment.trim()) continue; // blank or only comment
+
+      // if already contains colon (before comment) skip
+      if(/:/.test(beforeComment)) continue;
+
+      // match: indent + key + space + short-value
+      const m = beforeComment.match(/^(\s*)([A-Za-z0-9_@.\-]+)\s+([^\s].{0,80})$/);
+      if(m){
+        const indent = m[1] || '';
+        const key = m[2];
+        const val = m[3].trim();
+        // skip list markers or if key starts with '-'
+        if(/^\-/.test(key)) continue;
+        // skip if value contains ':' (likely complex)
+        if(val.includes(':')) continue;
+        // safe: replace line with key: value, reattach comment if any
+        const commentPart = raw.includes('#') ? raw.substring(raw.indexOf('#')) : '';
+        lines[i] = `${indent}${key}: ${val}` + (commentPart ? ' ' + commentPart.trim() : '');
+      }
+    }
+    text = lines.join('\n');
+
+    // 3) Indentation heuristics: reduce runs of 3+ starting spaces to multiples of 2.
+    text = text.split('\n').map(line => {
+      // collapse leading spaces into 2-space multiples
+      return line.replace(/^ {3,}/, match => {
+        // compute how many leading spaces and convert to nearest lower multiple of 2
+        const n = match.length;
+        const newN = Math.floor(n/2)*2;
+        return ' '.repeat(newN || 2);
+      });
+    }).join('\n');
+
+    // 4) Try parsing with jsyaml to confirm
+    let parsedOk = false;
+    try {
+      if(typeof jsyaml !== 'undefined' && jsyaml.loadAll){
+        jsyaml.loadAll(text); // throws on syntax errors
+        parsedOk = true;
+      }
+    } catch(err){
+      parsedOk = false;
+    }
+
+    // 5) Apply changes and show appropriate message
     editor.value = text;
-    showResult('Auto-fix applied: tabs -> 2 spaces, trimmed trailing whitespace. Re-run Analyze for parsing.', false);
-    showSuggestions([]);
+    if(parsedOk){
+      showResult('Auto-fix applied — YAML now parses successfully. Re-run Analyze to get suggestions.', false);
+      showSuggestions([]);
+    } else {
+      showResult('Auto-fix applied (heuristic). Some structural issues may remain — click Analyze.', false);
+      // provide minimal hints (keep suggestions lightweight)
+      const hints = [];
+      if(/\t/.test(text)) hints.push('Found tabs — converted to 2 spaces.');
+      if(/^\s*[A-Za-z0-9_\-]+ [A-Za-z0-9_]/m.test(text)) hints.push('Converted a few "key value" patterns to "key: value" where safe.');
+      hints.push('If the YAML still fails, run Analyze and look for specific indentation or missing-colon errors.');
+      showSuggestions(hints);
+    }
   }
 
   // Clear
