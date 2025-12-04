@@ -124,3 +124,120 @@
   // initial
   clearEditor();
 })();
+/* ---------------------------
+   Auto-Fix (safe) - add to script.js
+   Paste this block AT THE END of your script.js
+   --------------------------- */
+
+(function () {
+  // helper: get DOM elements (adjust if your IDs differ)
+  const inputEl = document.querySelector('#yamlInput') || document.querySelector('textarea') || document.getElementById('yamlText');
+  const outputEl = document.querySelector('#result') || document.getElementById('output') || null;
+  const autoFixBtn = document.getElementById('autofixBtn');
+
+  if (!autoFixBtn) {
+    // Nothing to bind to — no autofix button found.
+    return;
+  }
+
+  autoFixBtn.addEventListener('click', tryAutoFix);
+
+  // Main entrypoint for safe autofix
+  function tryAutoFix(e) {
+    e && e.preventDefault();
+
+    if (!inputEl) {
+      alert('Auto-fix: YAML input area not found (check element IDs).');
+      return;
+    }
+
+    const original = inputEl.value || '';
+    if (!original.trim()) {
+      toast('Paste YAML first'); // if you have a toast / notice helper; harmless if undefined
+      return;
+    }
+
+    // Step 1: quick normalizations
+    let fixed = original.replace(/\t/g, '  ');             // tabs -> 2 spaces
+    fixed = fixed.replace(/\r\n/g, '\n');                  // normalize newlines
+    fixed = fixed.replace(/\u00A0/g, ' ');                 // non-breaking spaces -> normal
+    fixed = normalizeTrailingSpaces(fixed);
+
+    // Step 2: simple syntax fixes (very conservative)
+    // Fix common "key value" missing colon cases:  apiVersion v1  -> apiVersion: v1
+    fixed = fixed.split('\n').map((line, i, arr) => {
+      // skip lines that already contain a colon before a comment
+      if (/:/.test(line.split('#')[0])) return line;
+
+      // pattern: optional indent + key + single-space + value with no colon
+      const m = line.match(/^(\s*)([A-Za-z0-9_@.-]+)\s+([^#\n]+)$/);
+      if (m) {
+        const indent = m[1] || '';
+        const key = m[2] || '';
+        const val = m[3] ? m[3].trim() : '';
+        // safety checks: don't convert list items (- name foo)
+        if (/^\-/.test(key)) return line;
+        // Don't fix if value looks like a complex expression (contains ':')
+        if (val.includes(':')) return line;
+        // Only fix short simple tokens (avoid touching long sentences)
+        if (val.length > 80) return line;
+        // Apply conservative fix
+        return `${indent}${key}: ${val}`;
+      }
+      return line;
+    }).join('\n');
+
+    // Step 3: indentation heuristics - collapse multiple spaces to two where leading spaces exceed 2
+    fixed = fixed.split('\n').map(line => {
+      return line.replace(/^ {3,}/, match => '  ' + match.slice(2)); // turn 3+ -> reduce by 1
+    }).join('\n');
+
+    // Step 4: try to parse with jsyaml (if available) to confirm it's now valid
+    let parsedOk = false;
+    try {
+      if (typeof jsyaml !== 'undefined' && jsyaml.loadAll) {
+        jsyaml.loadAll(fixed); // will throw if invalid
+        parsedOk = true;
+      } else {
+        // If jsyaml missing, skip parse-check but still update text
+        parsedOk = false;
+      }
+    } catch (err) {
+      parsedOk = false;
+    }
+
+    // If parsedOk true, replace input with fixed and show success message
+    inputEl.value = fixed;
+    if (parsedOk) {
+      showResult('Auto-fix applied — yaml parses successfully now.', 'success');
+    } else {
+      showResult('Auto-fix applied (heuristic). The YAML may still have issues — click Analyze.', 'info');
+    }
+  }
+
+  // small helpers
+  function normalizeTrailingSpaces(text) {
+    return text.split('\n').map(l => l.replace(/[ \t]+$/,'')).join('\n');
+  }
+
+  function showResult(msg, level) {
+    if (outputEl) {
+      outputEl.textContent = msg;
+      outputEl.classList.remove('error','success','info');
+      outputEl.classList.add(level || 'info');
+    } else {
+      // fallback: console & alert if user prefers
+      console.log('AutoFix:', msg);
+      // optional: display a short non-blocking toast if available
+    }
+  }
+
+  function toast(msg) {
+    if (typeof window.toast === 'function') {
+      window.toast(msg);
+    } else {
+      console.log('toast:', msg);
+    }
+  }
+
+})();
