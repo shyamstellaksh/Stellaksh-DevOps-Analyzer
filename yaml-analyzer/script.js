@@ -1,158 +1,126 @@
-// script.js — YAML analyzer (client-side). Requires js-yaml loaded first (we load it via CDN).
-(function () {
-  const txt = document.getElementById('yaml-input');
-  const result = document.getElementById('result');
+// script.js - YAML Analyzer logic (client-side only)
+// Requires jsyaml loaded on the page (we load it from unpkg in the HTML)
+
+(function(){
+  const editor = document.getElementById('editor');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const autofixBtn = document.getElementById('autofixBtn');
+  const resultBox = document.getElementById('resultBox');
   const suggestions = document.getElementById('suggestions');
-  const analyzeBtn = document.getElementById('analyze');
-  const clearBtn = document.getElementById('clear');
-  const autofixBtn = document.getElementById('autofix');
-  const loadGood = document.getElementById('load-good');
-  const loadBad = document.getElementById('load-bad');
+  const loadExample = document.getElementById('loadExample');
+  const exampleYaml = document.getElementById('exampleYaml');
 
-  if (typeof jsyaml === 'undefined') {
-    result.textContent = 'Error: js-yaml library not loaded. Please ensure CDN is reachable.';
-    return;
+  // Helper: show result
+  function showResult(text, isError){
+    resultBox.textContent = text;
+    resultBox.style.color = isError ? '#ffb5b5' : '#cde6d5';
+    if(isError) resultBox.style.borderColor = 'rgba(255,80,80,0.1)';
+    else resultBox.style.borderColor = 'rgba(0,0,0,0.05)';
   }
 
-  function showOk(parsed) {
-    result.style.color = '#8BE28B';
-    result.textContent = '✅ YAML OK — parsed successfully.\n\nPreview (first document):\n' + JSON.stringify(parsed, null, 2);
-    suggestions.innerHTML = '<strong>No problems found.</strong>';
-  }
-
-  function showError(err) {
-    result.style.color = '#ff8b6b';
-    let message = '❌ YAML Error: ' + (err && err.message ? err.message : String(err));
-    // If js-yaml includes mark info, show line/column
-    if (err && err.mark) {
-      message += `\n\nLine: ${err.mark.line + 1}, Column: ${err.mark.column + 1}`;
-    }
-    result.textContent = message;
-
-    // basic suggestions heuristics
-    const m = (err && err.message || '').toLowerCase();
-    const suggs = [];
-    if (m.includes('bad indentation')) {
-      suggs.push('Fix indentation: YAML uses spaces (not tabs). Use consistent 2 spaces per level. Replace tabs with two spaces.');
-    }
-    if (m.includes('unexpected')) {
-      suggs.push('Check for unexpected characters (colons, dashes). Ensure list items use "-" and mappings have "key: value".');
-    }
-    if (m.includes('end of the stream')) {
-      suggs.push('Possibly an incomplete document. Ensure there are no unclosed structures (brackets/quoted strings).');
-    }
-    if (m.includes('cannot read')) {
-      suggs.push('There might be a non-UTF character or control character; try retyping the offending line.');
-    }
-    if (suggs.length === 0) {
-      suggs.push('Review the error message above for location and context. Try the safe Auto-Fix which replaces tabs and trims trailing spaces.');
-    }
-    suggestions.innerHTML = '<ul><li>' + suggs.join('</li><li>') + '</li></ul>';
-  }
-
-  analyzeBtn.addEventListener('click', function () {
-    const text = txt.value;
-    if (!text.trim()) {
-      result.style.color = '#a7b0b8';
-      result.textContent = 'Paste YAML then click Analyze.';
-      suggestions.textContent = 'Ready — paste YAML and click Analyze.';
+  // Helper: suggestions list
+  function showSuggestions(list){
+    if(!list || list.length===0){
+      suggestions.innerHTML = '';
       return;
     }
+    suggestions.innerHTML = '<strong>Suggestions & fixes</strong><ul style="margin-top:8px;">'
+      + list.map(s => `<li>${escapeHtml(s)}</li>`).join('') + '</ul>';
+  }
+
+  // basic html escape
+  function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+  // Analyze YAML (safe: parse with js-yaml)
+  function analyze(){
+    const text = editor.value.trim();
+    if(!text){ showResult('No YAML provided. Paste a snippet and click Analyze.', true); showSuggestions([]); return;}
     try {
-      // parse all docs; return array if multiple
-      const docs = [];
-      jsyaml.loadAll(text, function (doc) { docs.push(doc); });
-      if (docs.length === 0) {
-        result.style.color = '#ff8b6b';
-        result.textContent = '❌ YAML Error: empty document or parsing failed.';
-        suggestions.textContent = 'Try simpler YAML or a single small snippet.';
-        return;
-      }
-      // show first doc preview
-      showOk(docs[0]);
+      // jsyaml is provided by CDN: window.jsyaml
+      const doc = jsyaml.loadAll(text); // parse possibly multi-doc
+      showResult('✅ Valid YAML — parsed ' + doc.length + ' document(s).', false);
+
+      // Provide lightweight checks & suggestions:
+      const s = [];
+      // check for tabs (common cause)
+      if(/\t/.test(text)) s.push('Found tab characters — replace tabs with 2 spaces for YAML consistency.');
+      // quick check for typical Kubernetes "kind" missing colon
+      if(/^\s*kind\s+[A-Za-z]/m.test(text)) s.push('Possible missing colon on a "kind" or other mapping (e.g. "kind: Pod"). Ensure "key: value" format.');
+      // check for trailing colon lines
+      if(/:\s*$/.test(text)) s.push('Found a line ending with ":" — check that the value or nested block is present on following lines.');
+      // show safe hints
+      if(s.length===0) s.push('No obvious quick issues found. For semantic checks (K8s rules, deprecated fields), use targeted validators (coming soon).');
+
+      showSuggestions(s);
     } catch (err) {
-      showError(err);
-    }
-  });
-
-  clearBtn.addEventListener('click', function () {
-    txt.value = '';
-    result.style.color = '#a7b0b8';
-    result.textContent = 'Ready — paste YAML and click Analyze.';
-    suggestions.textContent = 'No suggestions yet.';
-  });
-
-  autofixBtn.addEventListener('click', function () {
-    const original = txt.value || '';
-    if (!original.trim()) {
-      suggestions.textContent = 'Nothing to auto-fix. Paste YAML first.';
-      return;
-    }
-
-    // Safe autofix steps:
-    // 1) Replace tabs with two spaces
-    // 2) Trim trailing spaces on each line
-    // 3) Remove BOM if present
-    let fixed = original.replace(/\uFEFF/g, '');
-    fixed = fixed.replace(/\t/g, '  ');
-    fixed = fixed.split('\n').map(l => l.replace(/\s+$/,'')).join('\n');
-
-    // Try parse; if it works, update textarea and show message
-    try {
-      const docs = [];
-      jsyaml.loadAll(fixed, function (d) { docs.push(d); } );
-      if (docs.length > 0) {
-        txt.value = fixed;
-        suggestions.innerHTML = '<strong>Auto-fix applied:</strong> tabs → 2 spaces; trimmed trailing spaces. Re-run Analyze to confirm.';
-        showOk(docs[0]);
-        return;
+      // jsyaml throws SyntaxError with mark info; build friendly message
+      const raw = String(err && err.message ? err.message : err);
+      let friendly = 'YAML Error: ' + raw;
+      // try to extract line/column if present
+      // js-yaml may embed "at line X, column Y"
+      const m = raw.match(/at line (\d+), column (\d+)/);
+      if(m){
+        friendly += ` (line ${m[1]}, column ${m[2]})`;
       }
-    } catch (err) {
-      // show error and suggested fix
-      suggestions.innerHTML = '<strong>Auto-fix attempt failed.</strong> Applied simple fixes (tabs→spaces, trimmed). Further suggestion: ' +
-        'inspect indentation at the reported line/column.';
-      showError(err);
-      return;
+      showResult(friendly, true);
+
+      // Provide suggestions based on error message heuristics
+      const sug = [];
+      if(/indentation|indent/i.test(raw)) sug.push('Bad indentation — use 2 spaces per indentation level. Avoid mixing tabs and spaces.');
+      if(/expected <block|unexpected end of the document/i.test(raw)) sug.push('Document truncated or missing content after a mapping — check for incomplete lines or missing values.');
+      if(/Can't find variable/i.test(raw) || /jsyaml/i.test(raw)) sug.push('Parser dependency issue (js-yaml). Ensure the page includes the js-yaml library. (This page loads it from CDN.)');
+      if(/unknown/i.test(raw) && /directive/i.test(raw)) sug.push('Check for illegal characters or control characters in the file (invisible chars).');
+
+      // default fallback
+      if(sug.length===0) sug.push('Check indentation, ensure there are no tabs, and confirm your key-value lines use "key: value" format.');
+
+      showSuggestions(sug);
     }
+  }
 
-    suggestions.textContent = 'Auto-fix attempted but parsing still fails. See Result for details.';
+  // Auto-fix (safe): normalize tabs -> 2 spaces, remove trailing whitespace, normalize line endings
+  function tryAutoFix(){
+    let text = editor.value;
+    if(!text) return;
+    // replace tabs with 2 spaces (safe)
+    text = text.replace(/\t/g, '  ');
+    // trim trailing spaces
+    text = text.split(/\r?\n/).map(l => l.replace(/\s+$/,'')).join('\n');
+    // replace CRLF with LF
+    text = text.replace(/\r\n/g, '\n');
+    // remove extraneous leading BOM
+    text = text.replace(/^\uFEFF/,'');
+    editor.value = text;
+    showResult('Auto-fix applied: tabs -> 2 spaces, trimmed trailing whitespace. Re-run Analyze for parsing.', false);
+    showSuggestions([]);
+  }
+
+  // Clear
+  function clearEditor(){
+    editor.value = '';
+    showResult('Ready — paste YAML and click Analyze.', false);
+    showSuggestions([]);
+  }
+
+  // Load example
+  function loadExampleYaml(){
+    editor.value = exampleYaml.textContent.trim();
+    showResult('Example loaded. Click Analyze to validate.', false);
+    showSuggestions([]);
+  }
+
+  // Events
+  analyzeBtn.addEventListener('click', analyze);
+  clearBtn.addEventListener('click', clearEditor);
+  autofixBtn.addEventListener('click', tryAutoFix);
+  loadExample.addEventListener('click', loadExampleYaml);
+
+  // keyboard shortcut: ctrl/cmd + Enter to analyze
+  editor.addEventListener('keydown', function(e){
+    if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); analyze(); }
   });
 
-  // quick sample YAMLs
-  loadGood.addEventListener('click', function () {
-    const sample = [
-`apiVersion: v1
-kind: Pod
-metadata:
-  name: goodpod
-  labels:
-    app: demo
-spec:
-  containers:
-    - name: myapp
-      image: nginx:latest`
-    ].join('\n');
-    txt.value = sample;
-    result.textContent = 'Loaded valid sample. Click Analyze.';
-    suggestions.textContent = 'Tip: Click Analyze to parse.';
-  });
-
-  loadBad.addEventListener('click', function () {
-    const bad = [
-`apiVersion: v1
-kind Pod
-metadata:
- name: badpod    # wrong indent
-   labels:
-     app: test
-spec:
- containers:
-  - name: myapp
-    image: nginx:latest`
-    ].join('\n');
-    txt.value = bad;
-    result.textContent = 'Loaded broken sample. Click Analyze to see the error and suggestions.';
-    suggestions.textContent = 'Tip: Try Auto-Fix (safe) to fix tabs/trailing spaces.';
-  });
-
+  // initial
+  clearEditor();
 })();
