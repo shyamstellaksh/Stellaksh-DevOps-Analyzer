@@ -124,120 +124,97 @@
   // initial
   clearEditor();
 })();
-/* ---------------------------
-   Auto-Fix (safe) - add to script.js
-   Paste this block AT THE END of your script.js
-   --------------------------- */
 
+/* ---------------------------
+   Auto-Fix (safe) - REPLACEMENT BLOCK
+   Paste this block INSTEAD of the previous appended auto-fix IIFE.
+   --------------------------- */
 (function () {
-  // helper: get DOM elements (adjust if your IDs differ)
-  const inputEl = document.querySelector('#yamlInput') || document.querySelector('textarea') || document.getElementById('yamlText');
-  const outputEl = document.querySelector('#result') || document.getElementById('output') || null;
-  const autoFixBtn = document.getElementById('autofixBtn');
+  // Use the real element IDs used by the main script
+  const inputEl = document.getElementById('editor');       // main textarea
+  const outputEl = document.getElementById('resultBox');   // result display box
+  const autoFixBtn = document.getElementById('autofixBtn'); // autofix button
 
   if (!autoFixBtn) {
-    // Nothing to bind to — no autofix button found.
+    // No autofix button on page — nothing to do.
     return;
   }
+  if (!inputEl) {
+    console.warn('AutoFix: editor element (#editor) not found.');
+  }
 
-  autoFixBtn.addEventListener('click', tryAutoFix);
-
-  // Main entrypoint for safe autofix
-  function tryAutoFix(e) {
+  // Single, reliable click handler that updates the editor reliably.
+  autoFixBtn.addEventListener('click', function (e) {
     e && e.preventDefault();
 
-    if (!inputEl) {
-      alert('Auto-fix: YAML input area not found (check element IDs).');
-      return;
-    }
-
-    const original = inputEl.value || '';
+    const original = inputEl ? (inputEl.value || '') : '';
     if (!original.trim()) {
-      toast('Paste YAML first'); // if you have a toast / notice helper; harmless if undefined
+      if (outputEl) {
+        outputEl.textContent = 'Paste YAML first';
+        outputEl.style.color = '#ffb5b5';
+      }
       return;
     }
 
-    // Step 1: quick normalizations
-    let fixed = original.replace(/\t/g, '  ');             // tabs -> 2 spaces
-    fixed = fixed.replace(/\r\n/g, '\n');                  // normalize newlines
-    fixed = fixed.replace(/\u00A0/g, ' ');                 // non-breaking spaces -> normal
-    fixed = normalizeTrailingSpaces(fixed);
+    // STEP 1 - safe normalizations
+    let fixed = original.replace(/\t/g, '  ');    // tabs -> 2 spaces
+    fixed = fixed.replace(/\r\n/g, '\n');         // CRLF -> LF
+    fixed = fixed.replace(/\u00A0/g, ' ');        // NBSP -> normal space
+    fixed = fixed.split('\n').map(l => l.replace(/[ \t]+$/, '')).join('\n'); // trim trailing spaces
 
-    // Step 2: simple syntax fixes (very conservative)
-    // Fix common "key value" missing colon cases:  apiVersion v1  -> apiVersion: v1
-    fixed = fixed.split('\n').map((line, i, arr) => {
-      // skip lines that already contain a colon before a comment
-      if (/:/.test(line.split('#')[0])) return line;
+    // STEP 2 - very conservative missing-colon fixes
+    fixed = fixed.split('\n').map((line) => {
+      // ignore lines that already contain a colon before comment
+      const pre = line.split('#')[0];
+      if (/:/.test(pre)) return line;
 
-      // pattern: optional indent + key + single-space + value with no colon
-      const m = line.match(/^(\s*)([A-Za-z0-9_@.-]+)\s+([^#\n]+)$/);
-      if (m) {
-        const indent = m[1] || '';
-        const key = m[2] || '';
-        const val = m[3] ? m[3].trim() : '';
-        // safety checks: don't convert list items (- name foo)
-        if (/^\-/.test(key)) return line;
-        // Don't fix if value looks like a complex expression (contains ':')
-        if (val.includes(':')) return line;
-        // Only fix short simple tokens (avoid touching long sentences)
-        if (val.length > 80) return line;
-        // Apply conservative fix
-        return `${indent}${key}: ${val}`;
-      }
-      return line;
+      // pattern: indent + key + single-space + value (no colon)
+      const m = line.match(/^(\s*)([A-Za-z0-9_@.\-]+)\s+([^#\n]+)$/);
+      if (!m) return line;
+
+      const indent = m[1] || '';
+      const key = m[2] || '';
+      const val = (m[3] || '').trim();
+
+      // safety checks - do not transform list items or long lines
+      if (/^\-/.test(key)) return line;
+      if (val.includes(':')) return line;
+      if (val.length > 120) return line;
+
+      // conservative transformation
+      return `${indent}${key}: ${val}`;
     }).join('\n');
 
-    // Step 3: indentation heuristics - collapse multiple spaces to two where leading spaces exceed 2
+    // STEP 3 - mild indentation reduction heuristics (prevent overaggressive changes)
     fixed = fixed.split('\n').map(line => {
-      return line.replace(/^ {3,}/, match => '  ' + match.slice(2)); // turn 3+ -> reduce by 1
+      return line.replace(/^ {3,}/, match => '  ' + match.slice(2)); // reduce 3+ leading spaces by 1
     }).join('\n');
 
-    // Step 4: try to parse with jsyaml (if available) to confirm it's now valid
+    // STEP 4 - optionally validate parse using js-yaml if available
     let parsedOk = false;
     try {
       if (typeof jsyaml !== 'undefined' && jsyaml.loadAll) {
-        jsyaml.loadAll(fixed); // will throw if invalid
+        jsyaml.loadAll(fixed); // will throw if still invalid
         parsedOk = true;
-      } else {
-        // If jsyaml missing, skip parse-check but still update text
-        parsedOk = false;
       }
     } catch (err) {
       parsedOk = false;
     }
 
-    // If parsedOk true, replace input with fixed and show success message
-    inputEl.value = fixed;
-    if (parsedOk) {
-      showResult('Auto-fix applied — yaml parses successfully now.', 'success');
-    } else {
-      showResult('Auto-fix applied (heuristic). The YAML may still have issues — click Analyze.', 'info');
-    }
-  }
+    // WRITE BACK to editor (this was the missing step previously)
+    if (inputEl) inputEl.value = fixed;
 
-  // small helpers
-  function normalizeTrailingSpaces(text) {
-    return text.split('\n').map(l => l.replace(/[ \t]+$/,'')).join('\n');
-  }
-
-  function showResult(msg, level) {
+    // SHOW FEEDBACK
     if (outputEl) {
-      outputEl.textContent = msg;
-      outputEl.classList.remove('error','success','info');
-      outputEl.classList.add(level || 'info');
+      if (parsedOk) {
+        outputEl.textContent = 'Auto-fix applied — YAML parses successfully now. Re-run Analyze to verify rules.';
+        outputEl.style.color = '#cde6d5';
+      } else {
+        outputEl.textContent = 'Auto-fix applied (heuristic). The YAML may still have issues — click Analyze to see remaining errors.';
+        outputEl.style.color = '#d1e4ff';
+      }
     } else {
-      // fallback: console & alert if user prefers
-      console.log('AutoFix:', msg);
-      // optional: display a short non-blocking toast if available
+      console.log('Auto-fix applied. parsedOk=', parsedOk);
     }
-  }
-
-  function toast(msg) {
-    if (typeof window.toast === 'function') {
-      window.toast(msg);
-    } else {
-      console.log('toast:', msg);
-    }
-  }
-
+  });
 })();
