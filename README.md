@@ -23,7 +23,7 @@
 
 | Tool | Link |
 |------|------|
-| 🧪 **YAML Analyzer** | https://shyamstellaksh.github.io/yaml-analyzer/ |
+| 🧪 **YAML Analyzer** | https://shyamstellaksh.github.io/Stellaksh-DevOps-Analyzer/yaml-analyzer/index.html |
 | 🏠 **Home / Launcher** | https://shyamstellaksh.github.io/Stellaksh-DevOps-Analyzer/ |
 | 📦 **Repository** | https://github.com/shyamstellaksh/Stellaksh-DevOps-Analyzer |
 
