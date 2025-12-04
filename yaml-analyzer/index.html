@@ -1,49 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>YAML Analyzer — Stellaksh</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YAML Analyzer</title>
 
-  <!-- styles -->
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
-  <!-- js-yaml CDN (must load BEFORE script.js) -->
-  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
+
 <body>
-  <div class="container">
-    <header class="header">
-      <h1>YAML Analyzer</h1>
-      <p class="muted">Validate & debug YAML directly in your browser — nothing uploaded.</p>
-    </header>
+    <h1>YAML Analyzer</h1>
+    <p>Validate & debug YAML directly in your browser — nothing uploaded.</p>
 
-    <section class="panel">
-      <label for="yaml-input" class="label">Paste your YAML here</label>
-      <textarea id="yaml-input" placeholder="Paste Kubernetes / CI-CD / manifest snippet..."></textarea>
+    <div class="container">
+        <textarea id="inputYAML" placeholder="Paste your YAML here..."></textarea>
 
-      <div class="controls">
-        <button id="analyze-btn" class="btn primary">Analyze YAML</button>
-        <button id="clear-btn" class="btn">Clear</button>
-        <button id="auto-fix-btn" class="btn">Try Auto-Fix (safe)</button>
-      </div>
+        <button onclick="analyzeYAML()">Analyze YAML</button>
+        <button onclick="clearFields()">Clear</button>
+        <button onclick="autoFixYAML()">Try Auto-Fix (safe)</button>
 
-      <div id="result" class="result hidden" role="status" aria-live="polite"></div>
-    </section>
+        <div id="output"></div>
+        <div id="suggestions"></div>
+    </div>
 
-    <section class="panel">
-      <h2>Suggestions & Fixes</h2>
-      <div id="suggestions" class="suggestions">
-        <!-- suggestions will render here -->
-      </div>
-    </section>
-
-    <footer class="footer">
-      <small>Everything runs locally in your browser. No data is sent anywhere.</small>
-    </footer>
-  </div>
-
-  <!-- main behavior: script.js must be in the same folder (yaml-analyzer/script.js) -->
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
