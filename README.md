@@ -22,5 +22,7 @@ This project solves that.
 
 Everything runs in **your browser only**.
 
-## Live Demo (Coming Soon)
-- YAML Analyzer: `/yaml-analyzer/index.html`
+## Live Demo
+
+🔹 **YAML Analyzer**  
+https://shyamstellaksh.github.io/yaml-analyzer/index.html
