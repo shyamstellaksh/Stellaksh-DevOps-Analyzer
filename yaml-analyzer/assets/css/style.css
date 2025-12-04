@@ -1,0 +1,38 @@
+/* Reset + base */
+* {box-sizing: border-box;}
+html,body {height:100%;margin:0;font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#111;}
+.wrap {max-width:960px;margin:0 auto;padding:20px;}
+
+/* Header */
+.site-header {background:linear-gradient(90deg,#072b57,#0b3d91);color:#fff;padding:18px 0;}
+.site-header .brand {margin:0;font-size:20px;font-weight:700;letter-spacing:0.2px;}
+.site-header .tag {margin:6px 0 0;font-weight:400;opacity:0.9;font-size:13px;}
+
+/* Main content */
+main {background:#fff;padding:28px;border-radius:10px;margin-top:20px;box-shadow:0 6px 24px rgba(7,17,34,0.06);}
+h2 {font-size:20px;margin:0 0 12px;}
+p {line-height:1.6;color:#333;font-size:15px;}
+
+/* Buttons / Call to action */
+.btn {
+  display:inline-block;padding:10px 16px;border-radius:8px;background:#0b3d91;color:#fff;text-decoration:none;font-weight:600;
+  box-shadow:0 6px 18px rgba(11,61,145,0.18);
+}
+.btn.secondary {background:#edf2ff;color:#0b3d91;border:1px solid rgba(11,61,145,0.06);box-shadow:none;}
+
+/* Demo link style */
+.live-list {list-style:none;padding:0;margin:12px 0 0;}
+.live-list li {padding:12px;border-radius:8px;border:1px solid #f0f0f0;margin-bottom:10px;background:#fafafa;display:flex;align-items:center;justify-content:space-between;}
+.live-list a {color:#0b3d91;font-weight:600;text-decoration:none;}
+
+/* Footer */
+.site-footer {text-align:center;margin:20px 0;color:#666;font-size:13px;}
+
+/* Responsive */
+@media (max-width:600px){
+  .wrap {padding:14px;}
+  .site-header .brand {font-size:18px;}
+  main {padding:18px;}
+  h2 {font-size:18px;}
+  .btn {padding:9px 12px;font-size:14px;}
+}
