@@ -1,9 +1,9 @@
 <div align="center">
 
 # 🌙🚀 **Stellaksh DevOps Analyzer**
-### *A Dark-Themed, Client-Side DevOps Toolkit — Secure • Fast • No Uploads*
+### Client-Side DevOps Toolkit — Secure • Fast • No Uploads*
 
-<img src="assets/dark-banner.png" width="100%" alt="Stellaksh Banner"/>
+<img src="assets/banner.png.PNG" width="100%" alt="Stellaksh Banner"/>
 
 ---
 
