@@ -3,37 +3,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Stelaksh — DevOps Analyzer</title>
-  <link rel="stylesheet" href="/yaml-analyzer/style.css">
+  <title>Stellaksh — DevOps Analyzer</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/main.css">
 </head>
-<body class="page-root">
-  <main class="container">
-    <h1 class="title">Stelaksh — DevOps Analyzer</h1>
-
-    <p class="lead">
-      A small suite of <strong>client-side</strong> DevOps tools:
-      YAML & manifest linting, plus Terraform, Dockerfile and CI/CD checks planned.
-      Everything runs in your browser — no backend, no uploads. Safe for enterprise use.
-    </p>
-
-    <div class="card">
-      <h2 class="card-title">Tools included (roadmap)</h2>
-      <ul class="roadmap">
-        <li>✓ YAML Analyzer (live demo)</li>
-        <li>→ Terraform Analyzer (coming soon)</li>
-        <li>→ Kubernetes manifest checker (coming soon)</li>
-        <li>→ Dockerfile analyzer (coming soon)</li>
-        <li>→ CI/CD config inspector (coming soon)</li>
-      </ul>
-
-      <p>Everything is client-side: your files never leave your browser — suitable for finance / high-security environments.</p>
-
-      <a class="btn" href="/yaml-analyzer/index.html">Open YAML Analyzer</a>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="./">Stellaksh — DevOps Analyzer</a>
+      <nav class="nav">
+        <a class="nav-link" href="./yaml-analyzer/index.html">Open YAML Analyzer</a>
+      </nav>
     </div>
+  </header>
 
-    <footer class="footer">
-      Built with care — Stelaksh DevOps Analyzer · 100% client-side. Source: GitHub Pages.
-    </footer>
+  <main class="container main-hero">
+    <section class="hero">
+      <h1 class="hero-title">Client-side DevOps validation tools</h1>
+      <p class="hero-sub">
+        A curated suite of **client-side** DevOps tools for validating manifests and infra files.
+        Everything runs in your browser — no uploads, no telemetry. Safe for finance and enterprise use.
+      </p>
+
+      <div class="card roadmap">
+        <h3>Tools included (roadmap)</h3>
+        <ul>
+          <li>✔ YAML Analyzer (live demo)</li>
+          <li>➜ Terraform Analyzer (coming soon)</li>
+          <li>➜ Kubernetes manifest checker (coming soon)</li>
+          <li>➜ Dockerfile analyzer (coming soon)</li>
+          <li>➜ CI/CD config inspector (coming soon)</li>
+        </ul>
+
+        <p class="muted">Everything is client-side: files never leave your browser.</p>
+
+        <a class="cta" href="./yaml-analyzer/index.html">Open YAML Analyzer</a>
+      </div>
+
+      <section class="about">
+        <h4>Why this project?</h4>
+        <p>
+          Most cloud & DevOps linters are cloud-hosted. That prevents finance and high-security customers
+          from using them. This toolkit runs in the browser only — no backend, no storage — designed for
+          security-conscious teams.
+        </p>
+      </section>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>Built with care — Stellaksh DevOps Analyzer · 100% client-side · Source: GitHub Pages</small>
+    </div>
+  </footer>
+
+  <script>
+    // small analytics-free enhancement: if user is on root path, do nothing (keeps site light)
+  </script>
 </body>
 </html>
