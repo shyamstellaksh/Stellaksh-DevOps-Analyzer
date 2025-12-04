@@ -1,0 +1,11 @@
+/* shared site styles (index + analyzer) */
+:root{
+  --bg:#0f1113; --muted:#9aa6b2; --accent:#18a558;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#050507,#0f1113);color:#eaf2f7;font-family:Inter,system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+.container{max-width:1100px;margin:0 auto;padding:22px}
+.site-footer{padding:18px 0;color:var(--muted);text-align:center;font-size:13px}
+.card{background:rgba(255,255,255,0.02);border-radius:12px;padding:18px}
+.muted{color:var(--muted)}
+.cta{display:inline-block;margin-top:10px;padding:10px 14px;background:linear-gradient(180deg,var(--accent),#128c45);color:white;border-radius:10px;text-decoration:none;font-weight:600}
