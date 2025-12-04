@@ -1,29 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YAML Analyzer</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="assets/css/premium.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>YAML Analyzer — Stellaksh DevOps Tools</title>
+
+  <!-- Primary stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- js-yaml CDN (must be before script.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
-
 <body>
-    <header class="header">
-        <h1>YAML Analyzer</h1>
-        <p>Validate & debug YAML directly in your browser — nothing uploaded.</p>
-    </header>
+  <header class="site-header">
+    <div class="wrap">
+      <h1 class="brand">Stellaksh DevOps Analyzer</h1>
+      <p class="tag">Validate & debug YAML locally — no upload, no backend.</p>
+    </div>
+  </header>
 
-    <section class="container">
-        <textarea id="yamlInput" placeholder="Paste your YAML here..."></textarea>
-        <button onclick="validateYAML()">Analyze YAML</button>
-        <pre id="output"></pre>
+  <main class="wrap main">
+    <section class="panel">
+      <h2>YAML Analyzer</h2>
+      <p class="muted">Paste a Kubernetes/CI/CD/manifest snippet and click <strong>Analyze YAML</strong>.</p>
+
+      <label for="yaml-input" class="sr-only">YAML input</label>
+      <textarea id="yaml-input" placeholder="Paste your YAML here..." aria-label="YAML input"></textarea>
+
+      <div class="controls">
+        <button id="analyze-btn" class="btn primary">Analyze YAML</button>
+        <button id="clear-btn" class="btn">Clear</button>
+      </div>
+
+      <div id="yaml-output" class="result" aria-live="polite"></div>
     </section>
 
-    <footer class="footer">
-        Powered by Stellaksh DevOps Analyzer — secure, client-side tools
-    </footer>
+    <section class="panel small">
+      <h3>Quick test YAML</h3>
+      <pre class="example">
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.24
+      ports:
+        - containerPort: 80
+      </pre>
+      <p class="muted">Tip: use multi-document YAML separated by <code>---</code> for multiple manifests.</p>
+    </section>
+  </main>
 
-    <script src="script.js"></script>
+  <footer class="site-footer">
+    <div class="wrap">
+      <small>Built by Shyam Stellaksh — 100% client-side, secure DevOps tools.</small>
+    </div>
+  </footer>
+
+  <!-- App script (uses jsyaml) -->
+  <script src="script.js"></script>
 </body>
 </html>
