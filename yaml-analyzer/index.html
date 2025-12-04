@@ -3,53 +3,68 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>YAML Analyzer — Stelaksh</title>
+  <title>YAML Analyzer — Stellaksh</title>
 
-  <!-- local stylesheet -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css">
   <link rel="stylesheet" href="style.css">
-
-  <!-- js-yaml library (client-side). This must load BEFORE our script. -->
-  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
-<body class="tool-page">
-  <header class="top">
-    <a class="home-link" href="/index.html">← Home</a>
-    <h1>YAML Analyzer</h1>
-    <p class="subtitle">Validate & debug YAML directly in your browser — nothing uploaded.</p>
+<body>
+  <header class="site-header small">
+    <div class="container header-inner">
+      <a class="brand" href="../">Stellaksh — DevOps Analyzer</a>
+      <nav class="nav">
+        <a class="nav-link" href="../">Home</a>
+      </nav>
+    </div>
   </header>
 
-  <main class="tool">
-    <section class="editor">
-      <label for="yaml-input" class="label">Paste your YAML here</label>
-      <textarea id="yaml-input" placeholder="Paste Kubernetes / CI-CD / manifest snippet..."></textarea>
+  <main class="container yaml-page">
+    <div class="tool-card">
+      <h1>YAML Analyzer</h1>
+      <p class="muted">Validate & debug YAML directly in your browser — nothing uploaded.</p>
+
+      <label for="editor" class="sr-only">YAML editor</label>
+      <textarea id="editor" placeholder="Paste Kubernetes / CI-CD / manifest snippet..." spellcheck="false"></textarea>
 
       <div class="controls">
-        <button id="analyze" class="btn btn-green">Analyze YAML</button>
-        <button id="clear" class="btn">Clear</button>
-        <button id="autofix" class="btn">Try Auto-Fix (safe)</button>
+        <button id="analyzeBtn" class="btn primary">Analyze YAML</button>
+        <button id="clearBtn" class="btn">Clear</button>
+        <button id="autofixBtn" class="btn">Try Auto-Fix (safe)</button>
       </div>
-    </section>
 
-    <section class="output">
-      <h2>Result</h2>
-      <pre id="result" class="result-box" aria-live="polite">Ready — paste YAML and click Analyze.</pre>
+      <section class="result">
+        <h3>Result</h3>
+        <div id="resultBox" class="result-box">Ready — paste YAML and click Analyze.</div>
 
-      <h2>Suggestions & Fixes</h2>
-      <div id="suggestions" class="suggestions">No suggestions yet.</div>
-    </section>
+        <div id="suggestions" class="suggestions" aria-live="polite"></div>
+      </section>
+    </div>
 
-    <section class="quick-tests">
-      <h3>Quick test YAML</h3>
-      <button id="load-good" class="btn small">Load valid sample</button>
-      <button id="load-bad" class="btn small">Load broken sample</button>
-    </section>
+    <aside class="quick-test">
+      <h4>Quick test YAML</h4>
+      <pre class="example" id="exampleYaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: example
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest</pre>
+      <button id="loadExample" class="btn">Load example</button>
+    </aside>
   </main>
 
-  <footer class="footer small">
-    Powered by Stelaksh DevOps Analyzer — secure, client-side tools.
+  <footer class="site-footer">
+    <div class="container">
+      <small>Powered by Stellaksh DevOps Analyzer — client-side tools</small>
+    </div>
   </footer>
 
-  <!-- main script (must come AFTER js-yaml script tag above) -->
+  <!-- jsyaml (client-side parser). Using trusted CDN. -->
+  <script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+  <!-- tool script -->
   <script src="script.js"></script>
 </body>
 </html>
