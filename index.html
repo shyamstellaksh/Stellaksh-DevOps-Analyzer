@@ -3,48 +3,37 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Stellaksh — DevOps Analyzer</title>
-  <meta name="description" content="Stellaksh DevOps Analyzer — a collection of secure, client-side DevOps tooling (YAML, Terraform, Kubernetes checks). Everything runs in your browser — no uploads, no backend." />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
-  <style>
-    :root{
-      --bg:#0f1114; --card:#0f1720; --muted:#9aa4b2; --accent:#6b46c1; --link:#6ee7b7;
-      --text:#e6eef6;
-    }
-    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--text); margin:0; padding:40px;}
-    .container{max-width:880px; margin:0 auto;}
-    h1{font-size:34px; margin:0 0 8px;}
-    p.lead{color:var(--muted); margin:6px 0 22px; line-height:1.5;}
-    a.btn{background:transparent; border:1px solid rgba(255,255,255,0.08); padding:8px 14px; color:var(--link); text-decoration:none; border-radius:6px;}
-    footer{margin-top:48px; color:var(--muted); font-size:13px;}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); padding:18px; border-radius:10px; box-shadow: 0 6px 18px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.02);}
-  </style>
+  <title>Stelaksh — DevOps Analyzer</title>
+  <link rel="stylesheet" href="/yaml-analyzer/style.css">
 </head>
-<body>
-  <div class="container">
-    <h1>Stellaksh — DevOps Analyzer</h1>
-    <p class="lead">A small suite of **client-side** DevOps tools (YAML & manifest linting, Terraform & Docker checks planned). Everything runs in the browser — no backend, no uploads. Safe for enterprise use.</p>
+<body class="page-root">
+  <main class="container">
+    <h1 class="title">Stelaksh — DevOps Analyzer</h1>
 
-    <div class="card" role="region" aria-label="tools">
-      <h3 style="margin-top:0">Tools included (roadmap)</h3>
-      <ul style="color:var(--muted);">
+    <p class="lead">
+      A small suite of <strong>client-side</strong> DevOps tools:
+      YAML & manifest linting, plus Terraform, Dockerfile and CI/CD checks planned.
+      Everything runs in your browser — no backend, no uploads. Safe for enterprise use.
+    </p>
+
+    <div class="card">
+      <h2 class="card-title">Tools included (roadmap)</h2>
+      <ul class="roadmap">
         <li>✓ YAML Analyzer (live demo)</li>
-        <li>⟶ Terraform Analyzer (coming soon)</li>
-        <li>⟶ Kubernetes manifest checker (coming soon)</li>
-        <li>⟶ Dockerfile analyzer (coming soon)</li>
-        <li>⟶ CI/CD config inspector (coming soon)</li>
+        <li>→ Terraform Analyzer (coming soon)</li>
+        <li>→ Kubernetes manifest checker (coming soon)</li>
+        <li>→ Dockerfile analyzer (coming soon)</li>
+        <li>→ CI/CD config inspector (coming soon)</li>
       </ul>
 
-      <p style="margin-top:12px;color:var(--muted);">Everything is client-side: your files never leave your browser. This makes the tools safe for finance and high-security environments.</p>
+      <p>Everything is client-side: your files never leave your browser — suitable for finance / high-security environments.</p>
 
-      <p style="margin-top:18px;">
-        <a class="btn" href="/yaml-analyzer/index.html">Open YAML Analyzer</a>
-      </p>
+      <a class="btn" href="/yaml-analyzer/index.html">Open YAML Analyzer</a>
     </div>
 
-    <footer>
-      Built with care — Stellaksh DevOps Analyzer • 100% client-side. Source: GitHub pages.
+    <footer class="footer">
+      Built with care — Stelaksh DevOps Analyzer · 100% client-side. Source: GitHub Pages.
     </footer>
-  </div>
+  </main>
 </body>
 </html>
