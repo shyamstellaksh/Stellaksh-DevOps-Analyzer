@@ -1,25 +1,40 @@
+/* style.css — simple dark theme, readable on mobile */
 :root{
-  --bg:#0f1114; --panel:#0b1116; --card:#0f1720; --muted:#9aa4b2; --accent:#22c55e;
-  --primary:#16a34a; --text:#e6eef6; --glass: rgba(255,255,255,0.03);
+  --bg:#0f1113;
+  --card:#0c0d0f;
+  --muted:#a7b0b8;
+  --accent:#2d6a4f;
+  --accent-2:#1b4b34;
+  --text:#e6eef2;
+  --danger:#ff5964;
+  --glass: rgba(255,255,255,0.02);
 }
+
 *{box-sizing:border-box}
-body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;}
-.wrap{max-width:920px;margin:18px auto;padding:22px;}
-.hero h1{font-size:36px;margin:0 0 8px;}
-.subtitle{color:var(--muted); margin:0 0 18px;}
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); padding:18px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); margin-bottom:14px;}
-.analyzer .label{display:block;color:var(--muted); margin-bottom:8px;}
-.editor{width:100%; min-height:220px; padding:14px; background:#0a0e12; border-radius:8px; color:var(--text); border:1px solid rgba(255,255,255,0.03); font-family:Menlo, Monaco, monospace; font-size:14px; resize:vertical;}
-.controls{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;}
-.btn{padding:8px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text); cursor:pointer;}
-.btn.primary{background:var(--primary); color:#fff; border:none;}
-.result{min-height:80px; margin-top:12px; background:#071217; padding:12px; font-family:monospace; color:#ffd6d6;}
-.muted{color:var(--muted);}
-.suggestions h2{margin-top:0;}
-.footer{margin-top:12px; font-size:13px;}
-.sample{background:#06080a; padding:10px; border-radius:8px; overflow:auto; font-family:monospace; color:#d6e7ff; margin:10px 0;}
-label{font-weight:600;}
-@media (max-width:600px){
-  .wrap{padding:12px;}
-  .hero h1{font-size:26px;}
-}
+body{background:var(--bg); color:var(--text); font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; padding:24px; -webkit-font-smoothing:antialiased}
+.container{max-width:800px;margin:0 auto}
+.title{font-size:34px; margin:6px 0 8px}
+.lead{color:var(--muted);line-height:1.5;margin-bottom:18px}
+.card{background:var(--card); padding:18px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+.card-title{margin:0 0 8px}
+.roadmap{color:var(--text); margin:0 0 12px 18px}
+.btn{display:inline-block; padding:10px 14px; background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.06); border-radius:8px; text-decoration:none; margin-top:8px}
+.btn:hover{opacity:0.95}
+.btn-green{background:var(--accent); border-color:var(--accent-2); color:#fff}
+.footer{color:var(--muted); margin-top:26px; font-size:13px}
+
+/* Tool page specific */
+.tool-page .top{max-width:880px;margin:0 auto 18px;padding:0 8px}
+.top .home-link{color:var(--muted); text-decoration:none; display:inline-block; margin-bottom:8px}
+.top h1{margin:0;font-size:28px}
+.subtitle{color:var(--muted);margin:6px 0 12px}
+.tool{max-width:880px;margin:0 auto; display:block}
+.editor{background:var(--card); padding:16px; border-radius:12px; margin-bottom:18px}
+.label{display:block;color:var(--muted); margin-bottom:8px}
+textarea#yaml-input{width:100%; min-height:220px; background:#0b0c0e; color:var(--text); border-radius:8px; border:1px solid rgba(255,255,255,0.03); padding:12px; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:14px; line-height:1.45; resize:vertical}
+.controls{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap}
+.result-box{background:#081018; border-radius:8px; padding:12px; min-height:80px; color:#ff8b6b; white-space:pre-wrap}
+.suggestions{background:var(--glass); border-radius:8px; padding:12px; color:var(--muted); min-height:40px}
+.quick-tests{margin-top:12px; display:flex; gap:8px; flex-wrap:wrap}
+.small{padding:6px 8px; font-size:13px}
+.footer.small{margin-top:30px; color:var(--muted); font-size:13px; text-align:center}
